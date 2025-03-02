@@ -1,11 +1,16 @@
 package com.qa.pages;
 
+import java.util.HashMap;
+
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import com.qa.util.ElementActions;
+import com.qa.util.WaitMethods;
 
 import cucumber.api.Scenario;
 
@@ -20,10 +25,9 @@ public class EmployeeReports {
 
 	WebElement pimPageTitle;
 
-	@FindBy(xpath = "//a[text()='EmployeeReports']")
+	@FindBy(xpath = "//a[text()='Reports']")
 
 	WebElement ReportPageLink;
-
 	@FindBy(xpath = "//button[text()=' Add ']")
 
 	WebElement addReportsButton;
@@ -55,27 +59,114 @@ public class EmployeeReports {
 
 	WebElement SearchReportButton;
 
+	@FindBy(xpath = "//div[@class='oxd-table-body']/descendant::div[7]")
+
+	WebElement searchedReportName;
+
 	@FindBy(xpath = "//i[@class='oxd-icon bi-file-text-fill']")
 
 	WebElement generateReportButton;
+	@FindBy(xpath = "//div[@class='header-rgRow actual-rgRow']/descendant::div[2]")
 
+	WebElement empidFieldinReport;
+
+	@FindBy(xpath = "//div[@class='header-rgRow actual-rgRow']/descendant::div[4]")
+
+	WebElement emplastNameFieldinReport;
+
+	@FindBy(xpath = "//div[@class='header-rgRow actual-rgRow']/descendant::div[8]")
+
+	WebElement empfirsNameFieldinReport;
+
+	@FindBy(xpath="//input[@placeholder='Type for hints...']")
+	WebElement searchField;
 	public EmployeeReports(WebDriver driver) {
 
 		this.driver = driver;
 
 		PageFactory.initElements(driver, this);
 	}
-		
-		public String navigateToReportsPage(Scenario scenario) {
 
-			 
+	public String navigateToReportsPage(Scenario scenario) {
 
-			ElementActions.clickElement(driver, ReportPageLink, scenario);
+		ElementActions.clickElement(driver, ReportPageLink, scenario);
 
-	 
-
-			return ElementActions.getText(driver, ReportPageLink, scenario);
-
-		}
+		return ElementActions.getText(driver, ReportPageLink, scenario);
 
 	}
+
+	public void addCustomReport(String reportName, Scenario scenario) {
+
+		ElementActions.clickElement(driver, addReportsButton, scenario);
+
+		ElementActions.sendKeys(driver, reportsNamefield, scenario, reportName);
+
+		ElementActions.clickElement(driver, displayFieldGroupdropdownArrow, scenario);
+
+		Actions objactions = new Actions(driver);
+
+		objactions.sendKeys(Keys.ARROW_DOWN).build().perform();
+
+		objactions.sendKeys(Keys.ENTER).build().perform();
+
+		ElementActions.clickElement(driver, displayFielddropdownArrow, scenario);
+
+		objactions.sendKeys(Keys.ARROW_DOWN).build().perform();
+
+		objactions.sendKeys(Keys.ENTER).build().perform();
+
+		ElementActions.clickElement(driver, addempFieldButton, scenario);
+		ElementActions.clickElement(driver, displayFielddropdownArrow, scenario);
+
+		objactions.sendKeys(Keys.ARROW_DOWN).build().perform();
+
+		objactions.sendKeys(Keys.ENTER).build().perform();
+
+		ElementActions.clickElement(driver, addempFieldButton, scenario);
+
+		ElementActions.clickElement(driver, displayFielddropdownArrow, scenario);
+
+		objactions.sendKeys(Keys.ARROW_DOWN).build().perform();
+
+		objactions.sendKeys(Keys.ENTER).build().perform();
+
+		ElementActions.clickElement(driver, addempFieldButton, scenario);
+
+		ElementActions.clickElement(driver, saveReportsButton, scenario);
+
+	}
+
+	public String searchReport(String reportName, Scenario scenario) {
+         ElementActions.clickElement(driver, searchField, scenario);
+         System.out.println("Cleck done");
+		ElementActions.sendKeys(driver, searchField, scenario, reportName);
+		WaitMethods.staticWait(4000);
+
+		Actions objactions = new Actions(driver);
+
+		objactions.sendKeys(Keys.ARROW_DOWN).build().perform();
+
+		objactions.sendKeys(Keys.ENTER).build().perform();
+
+		ElementActions.clickElement(driver, SearchReportButton, scenario);
+
+		return ElementActions.getText(driver, searchedReportName, scenario);
+
+	}
+
+	public HashMap<String, String> getGeneratedReportFields(Scenario scenario) {
+
+		HashMap<String, String> generatedReportFieldMap = new HashMap();
+		ElementActions.clickElement(driver, generateReportButton, scenario);
+
+		generatedReportFieldMap.put("Employee Id", empidFieldinReport.getText());
+
+		generatedReportFieldMap.put("Employee First Name", empfirsNameFieldinReport.getText());
+
+		generatedReportFieldMap.put("Employee Last Name", emplastNameFieldinReport.getText());
+
+		return generatedReportFieldMap;
+
+	}
+
+}
